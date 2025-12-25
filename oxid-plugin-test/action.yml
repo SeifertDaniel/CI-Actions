@@ -77,7 +77,7 @@ runs:
       if: inputs.sourceguardian == 'true'
       shell: bash
       run: |
-        echo "zend_extension=$HOME/.php-ext/ixed.$(php -r 'echo PHP_MAJOR_VERSION.\".\".PHP_MINOR_VERSION;').lin" \
+        echo "zend_extension=$HOME/.php-ext/ixed.$(php -r 'echo PHP_MAJOR_VERSION.".".PHP_MINOR_VERSION;').lin" \
           > $HOME/sourceguardian.ini
         echo "sourceguardian.enable=1" >> $HOME/sourceguardian.ini
 
