@@ -129,3 +129,7 @@ Sendet einen CI-Status an einen beliebigen HTTP-Endpunkt.
     description: "CI passed"
     target_url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 ```
+
+## Beispiele
+
+Schaue in [CI Tests](https://github.com/d3datadevelopment/CI-Tests) für Integrationsbeispiele.
