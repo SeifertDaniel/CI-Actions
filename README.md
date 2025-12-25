@@ -35,7 +35,7 @@ Add:
     - name: Report CI status
       uses: d3datadevelopment/ci-actions/status-reporter@dev
       with:
-        status_endpoint: >
+        api_status_endpoint: >
           ${{ vars.GITEA_API }}statuses/${{ github.sha }}
         auth_token: ${{ secrets.GITEA_TOKEN }}
         state: ${{ needs.plugin-tests.result }}
