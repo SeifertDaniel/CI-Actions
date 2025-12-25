@@ -1,5 +1,23 @@
 # Github Actions
 
+## Composer package test
+
+### Usage:
+
+Add this chapter to `steps` list:
+
+```
+- name: Run composer package tests
+  uses: d3datadevelopment/ci-actions/composer-package-test@dev
+  with:
+    php_version: ${{ matrix.php }}
+    syntax_check_paths: "src,tests"
+    phpunit_version: "^9 || ^10"
+    test_suites: "unit,integration"
+```
+
+### Arguments
+
 ## OXID plugin test
 
 ### Usage:

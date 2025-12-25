@@ -1,0 +1,82 @@
+name: "Composer Package Test"
+description: "Runs tests for a generic Composer package"
+
+inputs:
+  php_version:
+    description: "PHP version used in the test run"
+    required: true
+
+  syntax_check_paths:
+    description: "Paths for PHP syntax check (space separated). If empty, syntax check is skipped."
+    required: false
+
+  phpunit_version:
+    description: "PHPUnit version constraint (e.g. ^9, ^10)"
+    required: true
+
+  test_suites:
+    description: "Comma separated list of test suites (e.g. unit,integration). If empty, run all tests."
+    required: false
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ inputs.php_version }}
+        tools: composer:v2
+
+    - name: Install dependencies
+      shell: bash
+      run: |
+        composer install --no-interaction --prefer-dist
+
+    - name: Install PHPUnit
+      shell: bash
+      run: |
+        composer require --dev "phpunit/phpunit:${{ inputs.phpunit_version }}" \
+          --no-interaction --no-progress
+
+    - name: PHP syntax check
+      shell: bash
+      run: |
+        if [[ -z "${{ inputs.syntax_check_paths }}" ]]; then
+          echo "No syntax check paths provided – skipping PHP syntax check."
+          exit 0
+        fi
+
+        for PATH in ${{ inputs.syntax_check_paths }}; do
+          if [ -d "$PATH" ]; then
+            echo "Syntax check in $PATH"
+            find "$PATH" -name "*.php" -print0 | xargs -0 -n1 php -l
+          else
+            echo "Path '$PATH' does not exist – skipped."
+          fi
+        done
+
+    - name: Run PHPUnit
+      shell: bash
+      run: |
+        if [[ -z "${{ inputs.test_suites }}" ]]; then
+          echo "No test suites specified – running default PHPUnit configuration"
+
+          vendor/bin/phpunit \
+            --fail-on-risky \
+            --fail-on-warning \
+            --no-coverage
+
+        else
+          IFS=',' read -ra SUITES <<< "${{ inputs.test_suites }}"
+
+          for SUITE in "${SUITES[@]}"; do
+        SUITE="$(echo "$SUITE" | xargs)"
+            echo "Running test suite: $SUITE"
+
+            vendor/bin/phpunit \
+              --fail-on-risky \
+              --fail-on-warning \
+              --no-coverage \
+              --testsuite="$SUITE"
+          done
+        fi
