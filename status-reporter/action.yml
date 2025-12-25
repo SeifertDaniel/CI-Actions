@@ -38,7 +38,7 @@ runs:
         CONTEXT="${{ inputs.context }}"
         DESCRIPTION="${{ inputs.description }}"
         TARGET_URL="${{ inputs.target_url }}"
-        ENDPOINT="${{ inputs.status_endpoint }}"
+        ENDPOINT="${{ inputs.api_status_endpoint }}"
         TOKEN="${{ inputs.auth_token }}"
 
         PAYLOAD=$(jq -n \
