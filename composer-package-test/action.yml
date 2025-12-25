@@ -7,7 +7,7 @@ inputs:
     required: true
 
   syntax_check_paths:
-    description: "Paths for PHP syntax check (space separated). If empty, syntax check is skipped."
+    description: "Paths for PHP syntax check (comma separated). If empty, syntax check is skipped."
     required: false
 
   phpunit_version:
@@ -46,12 +46,20 @@ runs:
           exit 0
         fi
 
-        for PATH in ${{ inputs.syntax_check_paths }}; do
-          if [ -d "$PATH" ]; then
-            echo "Syntax check in $PATH"
-            find "$PATH" -name "*.php" -print0 | xargs -0 -n1 php -l
+        IFS=',' read -ra PATHS <<< "${{ inputs.syntax_check_paths }}"
+
+        for RAW_PATH in "${PATHS[@]}"; do
+          PATH_TRIMMED="$(echo "$RAW_PATH" | xargs)"
+
+          if [[ -z "$PATH_TRIMMED" ]]; then
+            continue
+          fi
+
+          if [[ -d "$PATH_TRIMMED" ]]; then
+            echo "Syntax check in $PATH_TRIMMED"
+            find "$PATH_TRIMMED" -name "*.php" -print0 | xargs -0 -n1 php -l
           else
-            echo "Path '$PATH' does not exist – skipped."
+            echo "Path '$PATH_TRIMMED' does not exist – skipped."
           fi
         done
 

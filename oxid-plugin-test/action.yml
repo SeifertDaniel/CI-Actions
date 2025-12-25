@@ -6,12 +6,16 @@ inputs:
     description: "PHP version used in this run"
     required: true
 
+  syntax_check_paths:
+    description: "Paths for PHP syntax check (comma separated). If empty, syntax check is skipped."
+    required: false
+
   oxid_ref:
     description: "OXID version / ref used"
     required: true
 
   phpunit_version:
-    description: "PHPUnit version used"
+    description: "PHPUnit version constraint (e.g. ^9, ^10)"
     required: true
 
   sourceguardian:
@@ -85,6 +89,31 @@ runs:
         sudo cp $HOME/sourceguardian.ini "$PHP_INI_DIR/99-sourceguardian.ini"
 
         php -v | grep -i sourceguardian
+
+    - name: PHP syntax check
+      shell: bash
+      run: |
+        if [[ -z "${{ inputs.syntax_check_paths }}" ]]; then
+          echo "No syntax check paths provided – skipping PHP syntax check."
+          exit 0
+        fi
+
+        IFS=',' read -ra PATHS <<< "${{ inputs.syntax_check_paths }}"
+
+        for RAW_PATH in "${PATHS[@]}"; do
+          PATH_TRIMMED="$(echo "$RAW_PATH" | xargs)"
+
+          if [[ -z "$PATH_TRIMMED" ]]; then
+            continue
+          fi
+
+          if [[ -d "$PATH_TRIMMED" ]]; then
+            echo "Syntax check in $PATH_TRIMMED"
+            find "$PATH_TRIMMED" -name "*.php" -print0 | xargs -0 -n1 php -l
+          else
+            echo "Path '$PATH_TRIMMED' does not exist – skipped."
+          fi
+        done
 
     - name: Install OXID Shop
       shell: bash

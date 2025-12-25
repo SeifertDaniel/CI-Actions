@@ -29,6 +29,7 @@ Add this chapter to `steps` list:
   uses: d3datadevelopment/ci-actions/oxid-plugin-test@dev
   with:
     php_version: ${{ matrix.php }}
+    syntax_check_paths: "src,tests"
     oxid_ref: ${{ matrix.oxid_ref }}
     phpunit_version: "^9 || ^10"
     sourceguardian: "true"
