@@ -20,3 +20,33 @@ Add this chapter to `steps` list:
 ```
 
 ### Arguments
+
+## Status Reporter
+
+### Usage:
+
+Add:
+- repository secret
+  - `GITEA_TOKEN` with your custom access token
+- repository variable
+  - `GITEA_API`with your API endpoint
+- the following section to your workflow steps list
+  - ```
+    - name: Report CI status
+      uses: d3datadevelopment/ci-actions/status-reporter@dev
+      with:
+        status_endpoint: >
+          ${{ vars.GITEA_API }}statuses/${{ github.sha }}
+        auth_token: ${{ secrets.GITEA_TOKEN }}
+        state: ${{ needs.plugin-tests.result }}
+        description: >
+          CI result: ${{ needs.plugin-tests.result }}
+        target_url: >
+          ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+    ```
+
+### Arguments
+
+## Examples
+
+See examples for integration.

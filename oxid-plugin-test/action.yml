@@ -1,5 +1,5 @@
-name: "OXID Test Runner"
-description: "Runs OXID plugin tests with configurable runtime parameters"
+name: "OXID Plugin Test"
+description: "Runs OXID plugin tests"
 
 inputs:
   php_version:

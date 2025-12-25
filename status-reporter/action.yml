@@ -1,0 +1,53 @@
+name: "Status Reporter"
+description: "Reports CI status to a generic API"
+
+inputs:
+  api_status_endpoint:
+    description: "API endpoint for commit status"
+    required: true
+
+  auth_token:
+    description: "Authentication token for the API"
+    required: true
+
+  state:
+    description: "Status state (success, failure, error, pending)"
+    required: true
+
+  context:
+    description: "Status context identifier (e.g. ci/github)"
+    required: false
+    default: "ci/github"
+
+  description:
+    description: "Human readable status description"
+    required: false
+    default: "CI status reported"
+
+  target_url:
+    description: "URL with detailed build information"
+    required: false
+
+runs:
+  using: "composite"
+  steps:
+    - name: Send commit status
+      shell: bash
+      run: |
+        PAYLOAD=$(jq -n \
+          --arg state "${{ inputs.state }}" \
+          --arg context "${{ inputs.context }}" \
+          --arg description "${{ inputs.description }}" \
+          --arg target_url "${{ inputs.target_url }}" \
+          '{
+            state: $state,
+            context: $context,
+            description: $description,
+            target_url: $target_url
+          }')
+
+        curl -fsSL -X POST \
+          -H "Authorization: token ${{ inputs.auth_token }}" \
+          -H "Content-Type: application/json" \
+          -d "$PAYLOAD" \
+          "${{ inputs.api_status_endpoint }}"
