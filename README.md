@@ -79,7 +79,6 @@ Führt Tests für reine Composer-Pakete aus (ohne OXID).
 #### Tasks
 - PHP einrichten
 - Composer Dependencies installieren
-- PHPUnit installieren
 - optional PHP Syntax-Check
 - PHPUnit Tests ausführen
 
@@ -87,7 +86,6 @@ Führt Tests für reine Composer-Pakete aus (ohne OXID).
 | Name               | Typ    | Pflicht | Beschreibung                          | Beispiel           |
 |--------------------|--------|---------|---------------------------------------|--------------------|
 | php_version        | string | ja      | PHP-Version                           | "8.4"              |
-| phpunit_version    | string | ja      | PHPUnit Version                       | "^9.0"             |
 | test_suites        | string | nein    | PHPUnit Testsuites (kommagetrennt)    | "unit,integration" |
 | syntax_check_paths | string | nein    | kommagetrennte Pfade für Syntax-Check | "src,tests"        |
 
@@ -98,7 +96,6 @@ Führt Tests für reine Composer-Pakete aus (ohne OXID).
   uses: d3datadevelopment/ci-actions/composer-package-test@v1
   with:
     php_version: "8.2"
-    phpunit_version: "^10"
     syntax_check_paths: "src,Tests"
     test_suites: "unit,integration"
 ```

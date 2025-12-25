@@ -10,10 +10,6 @@ inputs:
     description: "Paths for PHP syntax check (comma separated). If empty, syntax check is skipped."
     required: false
 
-  phpunit_version:
-    description: "PHPUnit version constraint (e.g. ^9, ^10)"
-    required: true
-
   test_suites:
     description: "Comma separated list of test suites (e.g. unit,integration). If empty, run all tests."
     required: false
@@ -31,12 +27,6 @@ runs:
       shell: bash
       run: |
         composer install --no-interaction --prefer-dist
-
-    - name: Install PHPUnit
-      shell: bash
-      run: |
-        composer require --dev "phpunit/phpunit:${{ inputs.phpunit_version }}" \
-          --no-interaction --no-progress
 
     - name: PHP syntax check
       shell: bash
