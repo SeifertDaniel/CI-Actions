@@ -34,11 +34,18 @@ runs:
     - name: Send commit status
       shell: bash
       run: |
+        STATE="${{ inputs.state }}"
+        CONTEXT="${{ inputs.context }}"
+        DESCRIPTION="${{ inputs.description }}"
+        TARGET_URL="${{ inputs.target_url }}"
+        ENDPOINT="${{ inputs.status_endpoint }}"
+        TOKEN="${{ inputs.auth_token }}"
+
         PAYLOAD=$(jq -n \
-          --arg state "${{ inputs.state }}" \
-          --arg context "${{ inputs.context }}" \
-          --arg description "${{ inputs.description }}" \
-          --arg target_url "${{ inputs.target_url }}" \
+          --arg state "$STATE" \
+          --arg context "$CONTEXT" \
+          --arg description "$DESCRIPTION" \
+          --arg target_url "$TARGET_URL" \
           '{
             state: $state,
             context: $context,
@@ -47,7 +54,7 @@ runs:
           }')
 
         curl -fsSL -X POST \
-          -H "Authorization: token ${{ inputs.auth_token }}" \
+          -H "Authorization: token $TOKEN" \
           -H "Content-Type: application/json" \
           -d "$PAYLOAD" \
-          "${{ inputs.api_status_endpoint }}"
+          "$ENDPOINT"
