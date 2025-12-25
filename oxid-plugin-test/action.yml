@@ -94,7 +94,7 @@ runs:
       shell: bash
       run: |
         if [[ -z "${{ inputs.syntax_check_paths }}" ]]; then
-          echo "No syntax check paths provided – skipping PHP syntax check."
+          echo "No syntax check paths provided - skipping PHP syntax check."
           exit 0
         fi
 
@@ -111,7 +111,7 @@ runs:
             echo "Syntax check in $PATH_TRIMMED"
             find "$PATH_TRIMMED" -name "*.php" -print0 | xargs -0 -n1 php -l
           else
-            echo "Path '$PATH_TRIMMED' does not exist – skipped."
+            echo "Path '$PATH_TRIMMED' does not exist - skipped."
           fi
         done
 
@@ -161,7 +161,7 @@ runs:
         if vendor/bin/oe-console list | grep -q "oe:theme:activate"; then
           vendor/bin/oe-console oe:theme:activate apex
         else
-          echo "Theme activation not supported in this OXID version – skipped."
+          echo "Theme activation not supported in this OXID version - skipped."
         fi
 
     - name: Register plugin repository (path)
@@ -194,7 +194,7 @@ runs:
       working-directory: shop
       run: |
         if [[ -z "${{ inputs.test_suites }}" ]]; then
-          echo "No test suites specified – running default PHPUnit configuration"
+          echo "No test suites specified - running default PHPUnit configuration"
 
           vendor/bin/phpunit \
             --fail-on-risky \
