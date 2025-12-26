@@ -23,11 +23,6 @@ runs:
         php-version: ${{ inputs.php_version }}
         tools: composer:v2
 
-    - name: Install dependencies
-      shell: bash
-      run: |
-        composer install --no-interaction --prefer-dist
-
     - name: PHP syntax check
       shell: bash
       run: |
@@ -54,6 +49,11 @@ runs:
           fi
         done
         echo "::endgroup::"
+
+    - name: Install dependencies
+      shell: bash
+      run: |
+        composer install --no-interaction --prefer-dist
 
     - name: Run PHPUnit
       shell: bash
