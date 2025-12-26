@@ -44,7 +44,7 @@ uses: d3datadevelopment/ci-actions/<action-name>@v1
 | phpunit_version       | string | ja      | PHPUnit Version                       | "^9.0"             |
 | sourceguardian        | bool   | nein    | SourceGuardian aktivieren             | "true"             |
 | composer_package_name | string | ja      | Composer Package Name                 | "d3/mypackage"     |
-| oxid_module_id        | string | ja      | OXID Module ID                        | "d3mymodule"       |
+| oxid_module_id        | string | nein    | OXID Module ID zur Aktivierung        | "d3mymodule"       |
 | test_suites           | string | nein    | kommagetrennte PHPUnit Suites         | "unit,integration" |
 | syntax_check_paths    | string | nein    | kommagetrennte Pfade für Syntax-Check | "src,tests"        |
 

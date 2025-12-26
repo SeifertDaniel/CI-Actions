@@ -28,8 +28,8 @@ inputs:
     required: true
 
   oxid_module_id:
-    description: "OXID module ID (e.g. d3mypackage)"
-    required: true
+    description: "OXID module ID (e.g. d3mypackage). If empty, module activation is skipped."
+    required: false
 
   test_suites:
     description: "Comma separated list of test suites (e.g. unit,integration). If empty, run all tests."
@@ -182,6 +182,12 @@ runs:
       shell: bash
       working-directory: shop
       run: |
+        if [[ -z "${{ inputs.oxid_module_id }}" ]]; then
+          echo "No OXID module ID provided – skipping module activation."
+          exit 0
+        fi
+
+        echo "Activating OXID module: ${{ inputs.oxid_module_id }}"
         vendor/bin/oe-console oe:module:activate "${{ inputs.oxid_module_id }}"
 
     - name: Install PHPUnit
