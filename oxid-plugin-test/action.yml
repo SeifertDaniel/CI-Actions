@@ -190,6 +190,12 @@ runs:
         echo "Activating OXID module: ${{ inputs.oxid_module_id }}"
         vendor/bin/oe-console oe:module:activate "${{ inputs.oxid_module_id }}"
 
+    - name: Clear TMP folder
+      shell: bash
+      working-directory: shop
+      run: |
+        rm -rf ./source/tmp/*
+
     - name: Install PHPUnit
       shell: bash
       working-directory: shop
