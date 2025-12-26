@@ -93,6 +93,7 @@ runs:
     - name: PHP syntax check
       shell: bash
       run: |
+        echo "::group::PHP syntax check"
         if [[ -z "${{ inputs.syntax_check_paths }}" ]]; then
           echo "No syntax check paths provided - skipping PHP syntax check."
           exit 0
@@ -114,6 +115,7 @@ runs:
             echo "Path '$PATH_TRIMMED' does not exist - skipped."
           fi
         done
+        echo "::endgroup::"
 
     - name: Install OXID Shop
       shell: bash
@@ -193,6 +195,7 @@ runs:
       shell: bash
       working-directory: shop
       run: |
+        echo "::group::run PHPUnit tests"
         if [[ -z "${{ inputs.test_suites }}" ]]; then
           echo "No test suites specified - running default PHPUnit configuration"
 
@@ -219,4 +222,5 @@ runs:
               --testsuite="$SUITE"
           done
         fi
+        echo "::endgroup::"
 
