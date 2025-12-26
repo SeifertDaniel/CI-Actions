@@ -57,4 +57,5 @@ runs:
           -H "Authorization: token $TOKEN" \
           -H "Content-Type: application/json" \
           -d "$PAYLOAD" \
-          "$ENDPOINT"
+          "$ENDPOINT" \
+          || echo "Status reporting failed – ignored."
