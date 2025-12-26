@@ -130,3 +130,10 @@ Sendet einen CI-Status an einen beliebigen HTTP-Endpunkt.
 ## Beispiele
 
 Schaue in [CI Tests](https://github.com/d3datadevelopment/CI-Tests) für Integrationsbeispiele.
+
+## Selbsttests
+
+Dieses Repository enthält Workflows, die die Aktionen selbst testen.
+Die Tests werden anhand externer Test-Repositorys durchgeführt, die echten, ausführbaren Code enthalten.
+
+Diese Workflows werden automatisch ausgelöst, wenn Änderungen an den entsprechenden Aktionsverzeichnissen vorgenommen werden.
