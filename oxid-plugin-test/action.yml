@@ -188,8 +188,11 @@ runs:
       shell: bash
       working-directory: shop
       run: |
-        composer require --dev "phpunit/phpunit:${{ inputs.phpunit_version }}" \
-          --no-interaction --no-progress
+        composer require --dev \
+          "phpunit/phpunit:${{ inputs.phpunit_version }}" \
+          d3/testingtools:"*" \
+          --no-interaction \
+          --no-progress
 
     - name: Run PHPUnit tests
       shell: bash
