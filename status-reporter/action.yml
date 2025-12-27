@@ -58,4 +58,4 @@ runs:
           -H "Content-Type: application/json" \
           -d "$PAYLOAD" \
           "$ENDPOINT" \
-          || echo "Status reporting failed – ignored."
+          || echo "Status reporting failed - ignored."
