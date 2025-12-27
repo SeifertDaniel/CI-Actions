@@ -1,0 +1,78 @@
+name: "AI Changelog Generator"
+description: "Generate a Keep a Changelog compliant changelog entry using git-cliff and ChatGPT"
+
+
+inputs:
+  openai_api_key:
+    description: "OpenAI API key"
+    required: true
+
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install git-cliff
+      uses: taiki-e/install-action@v2
+      with:
+        tool: git-cliff
+
+
+    - name: Generate raw changelog data
+      shell: bash
+      run: |
+        PREV_TAG=$(git tag --sort=-creatordate | sed -n '2p')
+        CURR_TAG=$(git tag --sort=-creatordate | sed -n '1p')
+
+        echo "Previous tag: $PREV_TAG"
+        echo "Current tag: $CURR_TAG"
+
+
+        git log "$PREV_TAG..$CURR_TAG" \
+          --pretty=format:"- %s" \
+          > raw_commits.txt
+
+    - name: Generate Keep a Changelog entry via ChatGPT
+      shell: bash
+      env:
+        OPENAI_API_KEY: ${{ inputs.openai_api_key }}
+      run: |
+        python3 ${{ github.action_path }}/generate.py
+
+    - name: Append changelog entry
+      shell: bash
+      run: |
+        if [ ! -f CHANGELOG.md ]; then
+          echo "# Changelog" > CHANGELOG.md
+          echo "" >> CHANGELOG.md
+        fi
+
+
+        echo "" >> CHANGELOG.md
+        cat changelog_entry.md >> CHANGELOG.md
+
+
+    - name: Commit changelog
+      shell: bash
+      run: |
+        TARGET_BRANCH=dev_1.x_tagged_services
+
+        # 1. Auf Ziel-Branch wechseln, BEVOR Dateien geändert werden
+        git fetch origin $TARGET_BRANCH
+        git checkout $TARGET_BRANCH
+
+        # 2. Changelog anhängen (jetzt auf dem richtigen Branch)
+        if [ ! -f CHANGELOG.md ]; then
+          echo "# Changelog" > CHANGELOG.md
+          echo "" >> CHANGELOG.md
+        fi
+
+        echo "" >> CHANGELOG.md
+        cat changelog_entry.md >> CHANGELOG.md
+
+        # 3. Committen & pushen
+        git config user.name "github-actions"
+        git config user.email "github-actions@github.com"
+
+        git add CHANGELOG.md
+        git commit -m "docs: update changelog for release" || echo "No changes to commit"
+        git push origin $TARGET_BRANCH

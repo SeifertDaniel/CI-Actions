@@ -127,6 +127,44 @@ Sendet einen CI-Status an einen beliebigen HTTP-Endpunkt.
     target_url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 ```
 
+### AI Changelog Generator
+
+erstellt beim Anlgene eines Tags auf Basis der Commit Messages einen technisch orientiertes Changelog Abschnitt für
+alle Änderungen seit dem letzten Tag.
+
+#### Inputs
+| Name            | Typ    | Pflicht | Beschreibung                        | Beispiel                        |
+|-----------------|--------|---------|-------------------------------------|---------------------------------|
+| openai_api_key  | string | ja      | API-Key für OpenAI (ChatGpt)        | "abcdef"                        |
+
+#### Beispiel
+
+```
+name: Release Changelog
+
+on:
+  push:
+    tags:
+      - '*.*.*.*'
+
+
+jobs:
+  changelog:
+    runs-on: ubuntu-latest
+
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+
+      - name: Generate AI changelog
+        uses: ./.github/actions/ai-changelog@dev-1.x-autochangelog
+        with:
+          openai_api_key: ${{ secrets.OPENAI_API_KEY }}
+```
+
 ## Beispiele
 
 Schaue in [CI Tests](https://github.com/d3datadevelopment/CI-Tests) für Integrationsbeispiele.
