@@ -23,7 +23,7 @@ if not api_key:
     raise RuntimeError("OPENAI_API_KEY environment variable is missing")
 
 # Optional konfigurierbar (z. B. später als Action-Input)
-model = os.environ.get("OPENAI_MODEL", "gpt-4o-mini")
+model = os.environ.get("OPENAI_MODEL", "gpt-4.1-mini")
 
 # ------------------------------------------------------------
 # 2. Prompt bauen
