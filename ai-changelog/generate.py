@@ -30,9 +30,11 @@ model = os.environ.get("OPENAI_MODEL", "gpt-4.1-mini")
 # ------------------------------------------------------------
 
 prompt = f"""
-You are generating a changelog entry following https://keepachangelog.com.
+You are generating the BODY of the "Unreleased" section of a changelog entry following https://keepachangelog.com.
 
 Rules:
+- Do NOT include a headline (no "Unreleased", no version numbers, no links)
+- Start directly with section headings like "### Added", "### Changed", "### Fixed", "### Removed"
 - Audience: software developers
 - Use sections: Added, Changed, Fixed, Removed
 - Be concise and technical
