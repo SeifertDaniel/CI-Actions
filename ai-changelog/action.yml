@@ -6,10 +6,9 @@ inputs:
   openai_api_key:
     description: "OpenAI API key"
     required: true
-  inputs:
-    repo_url:
-      description: "Base repository URL (e.g. https://git.d3data.de/OWNER/REPO)"
-      required: true
+  repo_url:
+    description: "Base repository URL (e.g. https://git.d3data.de/OWNER/REPO)"
+    required: true
 
 runs:
   using: "composite"
