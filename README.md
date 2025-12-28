@@ -144,9 +144,10 @@ name: Release Changelog
 
 on:
   push:
-    tags:
-      - '*.*.*.*'
+    branches:
+      - 'rel_*'
 
+  workflow-dispatch:
 
 jobs:
   changelog:
