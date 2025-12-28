@@ -16,7 +16,7 @@ with open(RAW_CHANGELOG_FILE, "r", encoding="utf-8") as f:
     raw = f.read().strip()
 
 if not raw:
-    raise RuntimeError("raw_changelog.md is empty – no commits found between tags")
+    raise RuntimeError("raw_commits.txt is empty – no commits found between tags")
 
 api_key = os.environ.get("OPENAI_API_KEY")
 if not api_key:
@@ -100,7 +100,7 @@ try:
 
         result = json.loads(body)
 except HTTPError as e:
-    print("❌ OpenAI API error")
+    print("X OpenAI API error")
     print(e.read().decode("utf-8"))
     raise
 

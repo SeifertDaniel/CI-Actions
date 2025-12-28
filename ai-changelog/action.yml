@@ -6,30 +6,35 @@ inputs:
   openai_api_key:
     description: "OpenAI API key"
     required: true
-
+  inputs:
+    repo_url:
+      description: "Base repository URL (e.g. https://git.d3data.de/OWNER/REPO)"
+      required: true
 
 runs:
   using: "composite"
   steps:
-    - name: Install git-cliff
-      uses: taiki-e/install-action@v2
-      with:
-        tool: git-cliff
-
-
-    - name: Generate raw changelog data
+    - name: Collect commit messages
       shell: bash
       run: |
-        PREV_TAG=$(git tag --sort=-creatordate | sed -n '2p')
-        CURR_TAG=$(git tag --sort=-creatordate | sed -n '1p')
+        LAST_TAG=$(git describe --tags --abbrev=0 --match "*.*.*.*" --first-parent 2>/dev/null || echo "")
 
-        echo "Previous tag: $PREV_TAG"
-        echo "Current tag: $CURR_TAG"
-
-
-        git log "$PREV_TAG..$CURR_TAG" \
-          --pretty=format:"- %s" \
+        if [ -n "$LAST_TAG" ]; then
+          echo "Using last tag on branch: $LAST_TAG"
+          git log "${LAST_TAG}..HEAD" \
+            --first-parent \
+            --pretty=format:"- %s" \
           > raw_commits.txt
+        else
+          echo "No tag found on branch, using full history"
+          git log \
+            --first-parent \
+            --pretty=format:"- %s" \
+          > raw_commits.txt
+        fi
+
+        echo "====LIST===="
+        cat raw_commits.txt
 
     - name: Generate Keep a Changelog entry via ChatGPT
       shell: bash
@@ -38,18 +43,73 @@ runs:
       run: |
         python3 ${{ github.action_path }}/generate.py
 
-    - name: Append changelog entry
+    - name: Build Unreleased block
       shell: bash
       run: |
-        if [ ! -f CHANGELOG.md ]; then
-          echo "# Changelog" > CHANGELOG.md
-          echo "" >> CHANGELOG.md
+        LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "0.0.0.0")
+        BRANCH_NAME=${GITHUB_REF_NAME}
+        REPO_URL="${{ inputs.repo_url }}"
+
+        if [ -z "$REPO_URL" ]; then
+          echo "repo_url input is required"
+          exit 1
         fi
 
+        COMPARE_URL="${REPO_URL}/compare/${LAST_TAG}...${BRANCH_NAME}"
 
-        echo "" >> CHANGELOG.md
-        cat changelog_entry.md >> CHANGELOG.md
+        cat > UNRELEASED_block.md <<EOF
+        ## [Unreleased](${COMPARE_URL})
 
+        $(cat changelog_entry.md)
+        EOF
+
+    - name: Update CHANGELOG.md (AI-managed Unreleased)
+      shell: bash
+      run: |
+        CHANGELOG=CHANGELOG.md
+        AI_BLOCK=UNRELEASED_block.md
+
+        if [ ! -f "$AI_BLOCK" ]; then
+          echo "AI block not found, aborting"
+          exit 1
+        fi
+
+        if [ ! -f "$CHANGELOG" ]; then
+          echo "CHANGELOG.md not found"
+          exit 1
+        fi
+
+        # Marker initial anlegen (ganz oben), falls fehlend
+        if ! grep -q "<!-- ai-changelog:start -->" "$CHANGELOG"; then
+          awk '
+            NR==1 {
+              print "<!-- ai-changelog:start -->"
+              print "<!-- ai-changelog:end -->"
+              print ""
+            }
+            { print }
+          ' "$CHANGELOG" > CHANGELOG.tmp && mv CHANGELOG.tmp "$CHANGELOG"
+        fi
+
+        # Block ersetzen
+        awk '
+          BEGIN { in_block=0 }
+          /<!-- ai-changelog:start -->/ {
+            print
+            while ((getline line < "'"$AI_BLOCK"'") > 0) print line
+            close("'"$AI_BLOCK"'")
+            in_block=1
+            next
+          }
+          /<!-- ai-changelog:end -->/ {
+            in_block=0
+            print
+            next
+          }
+          !in_block { print }
+        ' "$CHANGELOG" > CHANGELOG.tmp
+
+        mv CHANGELOG.tmp "$CHANGELOG"
 
     - name: Commit changelog
       shell: bash
