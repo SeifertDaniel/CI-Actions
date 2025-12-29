@@ -9,6 +9,9 @@ inputs:
   repo_url:
     description: "Base repository URL (e.g. https://git.d3data.de/OWNER/REPO)"
     required: true
+  push_token:
+    description: "source repository push token"
+    required: true
 
 runs:
   using: "composite"
@@ -58,7 +61,6 @@ runs:
 
         cat > UNRELEASED_block.md <<EOF
         ## [Unreleased](${COMPARE_URL})
-
         $(cat changelog_entry.md)
         EOF
 
@@ -113,9 +115,35 @@ runs:
     - name: Commit changelog
       shell: bash
       run: |
+        REPO_URL="${{ inputs.repo_url }}"
+        PUSH_TOKEN="${{ inputs.push_token }}"
+
+        if [ -z "$REPO_URL" ]; then
+          echo "repo_url input is required"
+          exit 1
+        fi
+
+        if [ -z "$PUSH_TOKEN" ]; then
+          echo "PUSH_TOKEN secret is required"
+          exit 1
+        fi
+
         git config user.name "github-actions"
         git config user.email "github-actions@github.com"
 
+        # Push-URL aus repo_url ableiten
+        GITEA_PUSH_URL="${REPO_URL}.git"
+        AUTH_GITEA_URL=$(echo "$GITEA_PUSH_URL" | sed "s#https://#https://${PUSH_TOKEN}@#")
+
+        # Remote setzen (idempotent)
+        if git remote | grep -q "^gitea$"; then
+          git remote set-url gitea "$AUTH_GITEA_URL"
+        else
+          git remote add gitea "$AUTH_GITEA_URL"
+        fi
+
         git add CHANGELOG.md
-        git commit -m "docs: update changelog for release" || echo "No changes to commit"
-        git push
+        git commit -m "docs(changelog): update unreleased section" || echo "No changes"
+
+        # Explizit nach Gitea pushen (aktueller Branch)
+        git push gitea HEAD

@@ -133,9 +133,11 @@ erstellt beim Anlgene eines Tags auf Basis der Commit Messages einen technisch o
 alle Änderungen seit dem letzten Tag.
 
 #### Inputs
-| Name            | Typ    | Pflicht | Beschreibung                        | Beispiel                        |
-|-----------------|--------|---------|-------------------------------------|---------------------------------|
-| openai_api_key  | string | ja      | API-Key für OpenAI (ChatGpt)        | "abcdef"                        |
+| Name            | Typ    | Pflicht | Beschreibung                               | Beispiel                        |
+|-----------------|--------|---------|--------------------------------------------|---------------------------------|
+| openai_api_key  | string | ja      | API-Key für OpenAI (ChatGpt)               | "abcdef"                        |
+| repo_url        | string | ja      | Repository URL                             | "https://git.mydomain.com/..."  |
+| push_token      | string | ja      | Token mit Push-Berechtigung im Remote Repo | "abcdef"                        |
 
 #### Beispiel
 
@@ -164,6 +166,8 @@ jobs:
         uses: ./.github/actions/ai-changelog@dev-1.x-autochangelog
         with:
           openai_api_key: ${{ secrets.OPENAI_API_KEY }}
+          repo_url: https://git.mydomain.com/OWNER/REPO
+          push_token: ${{ secrets.GITEA_PUSH_TOKEN }}
 ```
 
 ## Beispiele
