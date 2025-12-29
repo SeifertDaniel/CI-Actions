@@ -70,44 +70,54 @@ runs:
         CHANGELOG=CHANGELOG.md
         AI_BLOCK=UNRELEASED_block.md
 
-        if [ ! -f "$AI_BLOCK" ]; then
-          echo "AI block not found, aborting"
-          exit 1
-        fi
-
         if [ ! -f "$CHANGELOG" ]; then
           echo "CHANGELOG.md not found"
           exit 1
         fi
 
-        # Marker initial anlegen (ganz oben), falls fehlend
-        if ! grep -q "<!-- ai-changelog:start -->" "$CHANGELOG"; then
-          awk '
-            NR==1 {
-              print "<!-- ai-changelog:start -->"
-              print "<!-- ai-changelog:end -->"
-              print ""
-            }
-            { print }
-          ' "$CHANGELOG" > CHANGELOG.tmp && mv CHANGELOG.tmp "$CHANGELOG"
+        if [ ! -f "$AI_BLOCK" ]; then
+          echo "UNRELEASED_block.md not found"
+          exit 1
         fi
 
-        # Block ersetzen
         awk '
-          BEGIN { in_block=0 }
-          /<!-- ai-changelog:start -->/ {
-            print
+        BEGIN {
+          inserted = 0
+          skip = 0
+        }
+
+        # Entferne bestehenden Unreleased-Block
+        /^## \[Unreleased\]/ {
+          skip = 1
+          next
+        }
+
+        # Ende des alten Unreleased-Blocks erkennen
+        skip && /^## \[/ {
+          skip = 0
+        }
+
+        # Einfügepunkt: vor erstem Release-Header
+        /^## \[/ && !inserted {
+          while ((getline line < "'"$AI_BLOCK"'") > 0) print line
+          close("'"$AI_BLOCK"'")
+          print ""
+          inserted = 1
+        }
+
+        # Normale Ausgabe
+        !skip {
+          print
+        }
+
+        END {
+          # Falls es noch keine Releases gibt
+          if (!inserted) {
+            print ""
             while ((getline line < "'"$AI_BLOCK"'") > 0) print line
             close("'"$AI_BLOCK"'")
-            in_block=1
-            next
           }
-          /<!-- ai-changelog:end -->/ {
-            in_block=0
-            print
-            next
-          }
-          !in_block { print }
+        }
         ' "$CHANGELOG" > CHANGELOG.tmp
 
         mv CHANGELOG.tmp "$CHANGELOG"
@@ -143,7 +153,5 @@ runs:
         fi
 
         git add CHANGELOG.md
-        git commit -m "docs(changelog): update unreleased section" || echo "No changes"
-
-        # Explizit nach Gitea pushen (aktueller Branch)
+        git commit -m "docs: update unreleased section" || echo "No changes"
         git push gitea HEAD
