@@ -105,14 +105,14 @@ Führt Tests für reine Composer-Pakete aus (ohne OXID).
 Sendet einen CI-Status an einen beliebigen HTTP-Endpunkt.
 
 #### Inputs
-| Name            | Typ    | Pflicht | Beschreibung                        | Beispiel                        |
-|-----------------|--------|---------|-------------------------------------|---------------------------------|
-| status_endpoint | string | ja      | Vollständige API-URL                | "https://example.org/statuses/" |
-| auth_token      | string | ja      | Auth-Token (via Repository Secrets) | "abcdef"                        |
-| state           | string | ja      | Ausführungsstatus                   | "success", "failure", ...       |
-| context         | string | nein    | Status-Kontext                      | "ci/github"                     |
-| description     | string | nein    | Beschreibung                        | "CI passed"                     |
-| target_url      | string | nein    | Workflow URL mit Build-Details      |                                 |
+| Name            | Typ    | Pflicht | Beschreibung                        | Beispiel                             |
+|-----------------|--------|---------|-------------------------------------|--------------------------------------|
+| status_endpoint | string | ja      | Vollständige API-URL                | "https://mydomain.example/statuses/" |
+| auth_token      | string | ja      | Auth-Token (via Repository Secrets) | "abcdef"                             |
+| state           | string | ja      | Ausführungsstatus                   | "success", "failure", ...            |
+| context         | string | nein    | Status-Kontext                      | "ci/github"                          |
+| description     | string | nein    | Beschreibung                        | "CI passed"                          |
+| target_url      | string | nein    | Workflow URL mit Build-Details      |                                      |
 
 #### Beispiel
 
@@ -120,7 +120,7 @@ Sendet einen CI-Status an einen beliebigen HTTP-Endpunkt.
 - name: Report CI status
   uses: d3datadevelopment/ci-actions/status-reporter@v1
   with:
-    status_endpoint: https://example.org/statuses/${{ github.sha }}
+    status_endpoint: https://mydomain.example/statuses/${{ github.sha }}
     auth_token: ${{ secrets.STATUS_TOKEN }}
     state: success
     description: "CI passed"
@@ -129,15 +129,15 @@ Sendet einen CI-Status an einen beliebigen HTTP-Endpunkt.
 
 ### AI Changelog Generator
 
-erstellt beim Anlgene eines Tags auf Basis der Commit Messages einen technisch orientiertes Changelog Abschnitt für
+erstellt beim Änderungen innerhalb eines Release Branches auf Basis der Commit Messages einen technisch orientiertes Changelog Abschnitt für
 alle Änderungen seit dem letzten Tag.
 
 #### Inputs
-| Name            | Typ    | Pflicht | Beschreibung                               | Beispiel                        |
-|-----------------|--------|---------|--------------------------------------------|---------------------------------|
-| openai_api_key  | string | ja      | API-Key für OpenAI (ChatGpt)               | "abcdef"                        |
-| repo_url        | string | ja      | Repository URL                             | "https://git.mydomain.com/..."  |
-| push_token      | string | ja      | Token mit Push-Berechtigung im Remote Repo | "abcdef"                        |
+| Name            | Typ    | Pflicht | Beschreibung                               | Beispiel                            |
+|-----------------|--------|---------|--------------------------------------------|-------------------------------------|
+| openai_api_key  | string | ja      | API-Key für OpenAI (ChatGpt)               | "abcdef"                            |
+| repo_url        | string | ja      | Repository URL                             | "https://git.mydomain.example/..."  |
+| push_token      | string | ja      | Token mit Push-Berechtigung im Remote Repo | "abcdef"                            |
 
 #### Beispiel
 
