@@ -151,7 +151,7 @@ runs:
       working-directory: shop
       run: |
         vendor/bin/oe-console oe:admin:create-user \
-          --admin-email=ci@example.com \
+          --admin-email=ci@example.dev \
           --admin-password=admina
 
     - name: Activate OXID theme (if supported)
