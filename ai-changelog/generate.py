@@ -32,17 +32,32 @@ model = os.environ.get("OPENAI_MODEL", "gpt-4.1-mini")
 prompt = f"""
 You are generating the BODY of the "Unreleased" section of a changelog entry following https://keepachangelog.com.
 
-Rules:
-- Do NOT include a headline (no "Unreleased", no version numbers, no links)
-- Start directly with section headings like "### Added", "### Changed", "### Fixed", "### Removed"
-- Audience: software developers
-- Use sections: Added, Changed, Fixed, Removed
-- Be concise and technical
-- Group related changes
-- Do NOT invent changes
+Strict rules:
+- Do NOT include a headline (no "Unreleased", no versions, no links)
+- Start directly with section headings: "### Breaking Changes", "### Added", "### Changed", "### Fixed", "### Removed"
+- Audience: software developers, Users who are interested in the changes at a technical level
 - Output valid Markdown only
-- Do NOT add explanations outside the changelog
+- Be concise, factual, and technical
+- Group related changes
+- Do NOT invent or infer changes
+- If there are no changes in a section, remove that section.
 
+Breaking change rules:
+- Only include entries that are explicitly breaking based on the commit messages
+- Breaking changes include:
+  - removed or relocated public classes, interfaces, or services
+  - changed or replaced public interfaces or method contracts
+  - behavior changes requiring consumer code or configuration updates
+
+Filtering rules (important):
+- Ignore commits that are:
+  - purely stylistic (formatting, whitespace, naming only)
+  - internal refactors without external or behavioral impact
+  - meta/tooling unless they affect CI, testing, or release process
+- Do not repeat the same change in multiple sections
+- Prefer behavioral and API-relevant changes over implementation details
+
+Input:
 Commit messages between the two releases:
 {raw}
 """.strip()
