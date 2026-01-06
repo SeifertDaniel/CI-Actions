@@ -55,6 +55,7 @@ runs:
 
     - name: Run PHPUnit
       shell: bash
+      if: ${{ hashFiles('phpunit.xml') != '' }}
       run: |
         if [[ -z "${{ inputs.test_suites }}" ]]; then
           echo "No test suites specified - running default PHPUnit configuration"

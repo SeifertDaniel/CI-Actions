@@ -196,6 +196,7 @@ runs:
 
     - name: Install PHPUnit
       shell: bash
+      if: ${{ hashFiles('phpunit.xml') != '' }}
       working-directory: shop
       run: |
         composer require --dev \
@@ -206,6 +207,7 @@ runs:
 
     - name: Run PHPUnit tests
       shell: bash
+      if: ${{ hashFiles('phpunit.xml') != '' }}
       working-directory: shop
       run: |
         if [[ -z "${{ inputs.test_suites }}" ]]; then
