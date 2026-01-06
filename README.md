@@ -23,7 +23,7 @@ uses: d3datadevelopment/ci-actions/<action-name>@v1
 
 ## Enthaltene Actions
 ### oxid-test-runner
-  Führt OXID Plugin Tests in einer reproduzierbaren Umgebung aus.
+  Führt OXID Plugin Tests in einer reproduzierbaren Umgebung aus. Verfügbar für Plugins ab OXID 7.0.
 
 #### Tasks
   - PHP einrichten
