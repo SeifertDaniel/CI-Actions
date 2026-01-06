@@ -32,6 +32,7 @@ uses: d3datadevelopment/ci-actions/<action-name>@v1
   - OXID Shop installieren & konfigurieren
   - Theme aktivieren (falls unterstützt)
   - Plugin installieren & aktivieren
+  - PHPStan installieren und ausführen, wenn Konfigurationsdatei vorhanden ist
   - PHPUnit installieren
   - Unit- und/oder Integration-Tests ausführen
 
@@ -80,6 +81,7 @@ Führt Tests für reine Composer-Pakete aus (ohne OXID).
 - PHP einrichten
 - Composer Dependencies installieren
 - optional PHP Syntax-Check
+- PHPStan ausführen, wenn Konfigurationsdatei vorhanden ist
 - PHPUnit Tests ausführen
 
 #### Inputs

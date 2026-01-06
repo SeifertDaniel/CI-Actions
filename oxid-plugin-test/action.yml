@@ -194,6 +194,26 @@ runs:
       run: |
         rm -rf ./source/tmp/*
 
+    - name: Install PHPStan
+      shell: bash
+      working-directory: shop
+      if: ${{ hashFiles('phpstan.neon', 'phpstan.neon.dist') != '' }}
+      run: |
+        composer require --dev \
+          "phpstan/phpstan:*" \
+          --no-interaction \
+          --no-progress
+
+    - name: Run PHPStan
+      shell: bash
+      working-directory: shop
+      if: ${{ hashFiles('phpstan.neon', 'phpstan.neon.dist') != '' }}
+      run: |
+        vendor/bin/phpstan analyse \
+          --configuration=vendor/${{ inputs.composer_package_name }} \
+          --no-progress \
+          --quiet
+
     - name: Install PHPUnit
       shell: bash
       if: ${{ hashFiles('phpunit.xml') != '' }}

@@ -53,6 +53,14 @@ runs:
       run: |
         composer install --no-interaction --prefer-dist
 
+    - name: Run PHPStan
+      shell: bash
+      if: ${{ hashFiles('phpstan.neon', 'phpstan.neon.dist') != '' }}
+      run: |
+        vendor/bin/phpstan analyse \
+          --no-progress \
+          --quiet
+
     - name: Run PHPUnit
       shell: bash
       if: ${{ hashFiles('phpunit.xml') != '' }}
