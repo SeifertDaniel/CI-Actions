@@ -53,7 +53,7 @@ runs:
             target_url: $target_url
           }')
 
-        curl -fsSL -X POST \
+        curl -fsSL -o /dev/null -X POST \
           -H "Authorization: token $TOKEN" \
           -H "Content-Type: application/json" \
           -d "$PAYLOAD" \
