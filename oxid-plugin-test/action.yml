@@ -196,8 +196,8 @@ runs:
 
     - name: Install PHPStan
       shell: bash
-      working-directory: shop
       if: ${{ hashFiles('phpstan.neon', 'phpstan.neon.dist') != '' }}
+      working-directory: shop
       run: |
         composer require --dev \
           "phpstan/phpstan:*" \
@@ -206,8 +206,8 @@ runs:
 
     - name: Run PHPStan
       shell: bash
-      working-directory: shop
       if: ${{ hashFiles('phpstan.neon', 'phpstan.neon.dist') != '' }}
+      working-directory: shop
       run: |
         vendor/bin/phpstan analyse \
           --configuration=vendor/${{ inputs.composer_package_name }} \
