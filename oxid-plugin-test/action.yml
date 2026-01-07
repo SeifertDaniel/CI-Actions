@@ -200,7 +200,7 @@ runs:
       working-directory: shop
       run: |
         composer require --dev \
-          "phpstan/phpstan:*" \
+          "phpstan/phpstan:^1" \
           --no-interaction \
           --no-progress
 
@@ -220,8 +220,7 @@ runs:
 
         vendor/bin/phpstan analyse \
           --configuration="$CONFIG" \
-          --no-progress \
-          --quiet
+          --no-progress
 
     - name: Install PHPUnit
       shell: bash
