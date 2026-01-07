@@ -137,14 +137,19 @@ Schaue in [CI Tests](https://github.com/d3datadevelopment/CI-Tests) für Integra
 
 ### PHPStan
 
-Für CI Runs von OXID Modulen werden diese via Symlink in den Shop eingebunden. Beachten Sie, den optionalen `vendor` Ordner in 
-Ihrer PHPStan Konfiguration auszuschließen, da sonst eine Endlosschleife beim Durchlaufen der Ordner entsteht:
+Für CI Runs von OXID Modulen werden diese via Symlink in den Shop eingebunden. Beachten Sie, in Ihrer PHPStan 
+Konfiguration alle zu prüfenden (Root-)Ordner und Dateien explizit anzugeben. Globale Angaben (z.B. '.') kann 
+durch die Verwendung von Symlinks zu Endlosschleifen führen.
 
 ```
 parameters:
-  excludePaths:
-    analyseAndScan:
-      - vendor (?)
+  paths: 
+    - Core
+    - ...
+
+  scanFiles:
+    - Context.php
+    - ...
 ```
 
 ## Selbsttests
