@@ -209,8 +209,17 @@ runs:
       if: ${{ hashFiles('phpstan.neon', 'phpstan.neon.dist') != '' }}
       working-directory: shop
       run: |
+        if [[ -f vendor/${{ inputs.composer_package_name }}/phpstan.neon ]]; then
+          CONFIG="vendor/${{ inputs.composer_package_name }}/phpstan.neon"
+        elif [[ -f vendor/${{ inputs.composer_package_name }}/phpstan.neon.dist ]]; then
+          CONFIG="vendor/${{ inputs.composer_package_name }}/phpstan.neon.dist"
+        else
+          echo "No PHPStan config found, skipping."
+          exit 0
+        fi
+
         vendor/bin/phpstan analyse \
-          --configuration=vendor/${{ inputs.composer_package_name }} \
+          --configuration="$CONFIG" \
           --no-progress \
           --quiet
 
