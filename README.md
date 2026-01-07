@@ -133,6 +133,20 @@ Sendet einen CI-Status an einen beliebigen HTTP-Endpunkt.
 
 Schaue in [CI Tests](https://github.com/d3datadevelopment/CI-Tests) für Integrationsbeispiele.
 
+## Hinweise
+
+### PHPStan
+
+Für CI Runs von OXID Modulen werden diese via Symlink in den Shop eingebunden. Beachten Sie, den optionalen `vendor` Ordner in 
+Ihrer PHPStan Konfiguration auszuschließen, da sonst eine Endlosschleife beim Durchlaufen der Ordner entsteht:
+
+```
+parameters:
+  excludePaths:
+    analyseAndScan:
+      - vendor (?)
+```
+
 ## Selbsttests
 
 Dieses Repository enthält Workflows, die die Aktionen selbst testen.
