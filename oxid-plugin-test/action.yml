@@ -220,7 +220,8 @@ runs:
 
         vendor/bin/phpstan analyse \
           --configuration="$CONFIG" \
-          --no-progress
+          --no-progress \
+          --quiet
 
     - name: Install PHPUnit
       shell: bash
