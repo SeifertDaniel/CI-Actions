@@ -1,0 +1,48 @@
+name: "PHPUnit"
+description: "check for configuration file, install and execute PHPUnit"
+
+runs:
+  using: composite
+  steps:
+    - name: Install PHPUnit
+      shell: bash
+      if: ${{ hashFiles('phpunit.xml') != '' }}
+      working-directory: shop
+      run: |
+        composer require --dev \
+          "phpunit/phpunit:${{ inputs.phpunit_version }}" \
+          d3/testingtools:"*" \
+          --no-interaction \
+          --no-progress
+
+    - name: Run PHPUnit tests
+      shell: bash
+      if: ${{ hashFiles('phpunit.xml') != '' }}
+      working-directory: shop
+      run: |
+        if [[ -z "${{ inputs.test_suites }}" ]]; then
+          echo "No test suites specified - running default PHPUnit configuration"
+
+          vendor/bin/phpunit \
+            --fail-on-risky \
+            --fail-on-warning \
+            --config="vendor/${{ inputs.composer_package_name }}" \
+            --no-coverage \
+            --bootstrap="$(pwd)/source/bootstrap.php"
+
+        else
+          IFS=',' read -ra SUITES <<< "${{ inputs.test_suites }}"
+
+          for SUITE in "${SUITES[@]}"; do
+        SUITE="$(echo "$SUITE" | xargs)"
+            echo "Running test suite: $SUITE"
+
+            vendor/bin/phpunit \
+              --fail-on-risky \
+              --fail-on-warning \
+              --config="vendor/${{ inputs.composer_package_name }}" \
+              --no-coverage \
+              --bootstrap="$(pwd)/source/bootstrap.php" \
+              --testsuite="$SUITE"
+          done
+        fi

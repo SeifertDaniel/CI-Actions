@@ -1,0 +1,54 @@
+name: "OXID setup"
+description: "Install and setup OXID eShop"
+
+runs:
+  using: composite
+  steps:
+    - name: Install OXID Shop
+      shell: bash
+      run: |
+        composer create-project oxid-esales/oxideshop-project shop "${{ inputs.oxid_ref }}" --no-interaction --no-security-blocking
+
+    - name: Install OXID dependencies
+      shell: bash
+      working-directory: shop
+      run: |
+        composer install --no-interaction --no-progress
+
+    - name: Run OXID setup
+      shell: bash
+      working-directory: shop
+      run: |
+        : "${DB_HOST:?DB_HOST not set}"
+        : "${DB_NAME:?DB_NAME not set}"
+        : "${DB_USER:?DB_USER not set}"
+        : "${DB_PASS:?DB_PASS not set}"
+
+        vendor/bin/oe-console oe:setup:shop \
+          --db-host="$DB_HOST" \
+          --db-name="$DB_NAME" \
+          --db-user="$DB_USER" \
+          --db-password="$DB_PASS" \
+          --db-port="${DB_PORT:-3306}" \
+          --shop-url="http://localhost" \
+          --shop-directory="$(pwd)/source" \
+          --compile-directory="$(pwd)/source/tmp" \
+          --language=de
+
+    - name: Create OXID admin user
+      shell: bash
+      working-directory: shop
+      run: |
+        vendor/bin/oe-console oe:admin:create-user \
+          --admin-email=ci@example.dev \
+          --admin-password=admina
+
+    - name: Activate OXID theme (if supported)
+      shell: bash
+      working-directory: shop
+      run: |
+        if vendor/bin/oe-console list | grep -q "oe:theme:activate"; then
+          vendor/bin/oe-console oe:theme:activate apex
+        else
+          echo "Theme activation not supported in this OXID version - skipped."
+        fi

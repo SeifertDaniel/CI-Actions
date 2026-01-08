@@ -1,0 +1,32 @@
+name: "PHPUnit"
+description: "check for configuration file, execute PHPUnit"
+
+runs:
+  using: composite
+  steps:
+    - name: Run PHPUnit
+      shell: bash
+      if: ${{ hashFiles('phpunit.xml') != '' }}
+      run: |
+        if [[ -z "${{ inputs.test_suites }}" ]]; then
+          echo "No test suites specified - running default PHPUnit configuration"
+
+          vendor/bin/phpunit \
+            --fail-on-risky \
+            --fail-on-warning \
+            --no-coverage
+
+        else
+          IFS=',' read -ra SUITES <<< "${{ inputs.test_suites }}"
+
+          for SUITE in "${SUITES[@]}"; do
+        SUITE="$(echo "$SUITE" | xargs)"
+            echo "Running test suite: $SUITE"
+
+            vendor/bin/phpunit \
+              --fail-on-risky \
+              --fail-on-warning \
+              --no-coverage \
+              --testsuite="$SUITE"
+          done
+        fi

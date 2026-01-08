@@ -1,0 +1,10 @@
+name: "Install dependencies"
+description: ""
+
+runs:
+  using: composite
+  steps:
+    - name: Install dependencies
+      shell: bash
+      run: |
+        composer install --no-interaction --prefer-dist

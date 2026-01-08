@@ -1,0 +1,46 @@
+name: "Dump inputs"
+description: "Debug purpose: dump recieved inputs"
+
+inputs:
+  php_version:
+    description: "PHP version used in this run"
+    required: true
+
+  oxid_ref:
+    description: "OXID version / ref used"
+    required: true
+
+  phpunit_version:
+    description: "PHPUnit version constraint (e.g. ^9, ^10)"
+    required: true
+
+  sourceguardian:
+    description: "Whether SourceGuardian is required"
+    required: false
+    default: "false"
+
+  composer_package_name:
+    description: "Composer package name (e.g. d3/mypackage)"
+    required: true
+
+  oxid_module_id:
+    description: "OXID module ID (e.g. d3mypackage). If empty, module activation is skipped."
+    required: false
+
+  test_suites:
+    description: "Comma separated list of test suites (e.g. unit,integration). If empty, run all tests."
+    required: false
+
+runs:
+  using: composite
+  steps:
+    - name: Dump received inputs (debug)
+      shell: bash
+      run: |
+        echo "PHP=${{ inputs.php_version }}"
+        echo "OXID=${{ inputs.oxid_ref }}"
+        echo "PHPUnit=${{ inputs.phpunit_version }}"
+        echo "SourceGuardian=${{ inputs.sourceguardian }}"
+        echo "Composer Package=${{ inputs.composer_package_name }}"
+        echo "Module ID=${{ inputs.oxid_module_id }}"
+        echo "Test Suites=${{ inputs.test_suites }}"

@@ -17,65 +17,7 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Setup PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: ${{ inputs.php_version }}
-        tools: composer:v2
-
-    - name: PHP syntax check
-      shell: bash
-      run: |
-        if [[ -z "${{ inputs.syntax_check_paths }}" ]]; then
-          echo "No syntax check paths provided - skipping PHP syntax check."
-          exit 0
-        fi
-
-        IFS=',' read -ra PATHS <<< "${{ inputs.syntax_check_paths }}"
-
-        for RAW_PATH in "${PATHS[@]}"; do
-          PATH_TRIMMED="$(echo "$RAW_PATH" | xargs)"
-
-          if [[ -z "$PATH_TRIMMED" ]]; then
-            continue
-          fi
-
-          if [[ -d "$PATH_TRIMMED" ]]; then
-            echo "Syntax check in $PATH_TRIMMED"
-            find "$PATH_TRIMMED" -name "*.php" -print0 | xargs -0 -n1 php -l
-          else
-            echo "Path '$PATH_TRIMMED' does not exist - skipped."
-          fi
-        done
-
-    - name: Install dependencies
-      shell: bash
-      run: |
-        composer install --no-interaction --prefer-dist
-
-    - name: Run PHPUnit
-      shell: bash
-      if: ${{ hashFiles('phpunit.xml') != '' }}
-      run: |
-        if [[ -z "${{ inputs.test_suites }}" ]]; then
-          echo "No test suites specified - running default PHPUnit configuration"
-
-          vendor/bin/phpunit \
-            --fail-on-risky \
-            --fail-on-warning \
-            --no-coverage
-
-        else
-          IFS=',' read -ra SUITES <<< "${{ inputs.test_suites }}"
-
-          for SUITE in "${SUITES[@]}"; do
-        SUITE="$(echo "$SUITE" | xargs)"
-            echo "Running test suite: $SUITE"
-
-            vendor/bin/phpunit \
-              --fail-on-risky \
-              --fail-on-warning \
-              --no-coverage \
-              --testsuite="$SUITE"
-          done
-        fi
+    - uses: ../oxid-plugin-test/subactions/php-setup
+    - uses: ../oxid-plugin-test/subactions/syntax-check
+    - uses: ./subactions/package
+    - uses: ./subactions/phpunit

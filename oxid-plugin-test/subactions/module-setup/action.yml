@@ -1,0 +1,29 @@
+name: "Setup PHP and Composer"
+description: "Setup an OXID compatible PHP version as well as Composer"
+
+runs:
+  using: composite
+  steps:
+    - name: Register plugin repository (path)
+      shell: bash
+      working-directory: shop
+      run: |
+        composer config repositories.plugin path ../
+
+    - name: Install plugin via Composer
+      shell: bash
+      working-directory: shop
+      run: |
+        composer require "${{ inputs.composer_package_name }}:@dev" --no-interaction --no-progress
+
+    - name: Activate OXID module
+      shell: bash
+      working-directory: shop
+      run: |
+        if [[ -z "${{ inputs.oxid_module_id }}" ]]; then
+          echo "No OXID module ID provided - skipping module activation."
+          exit 0
+        fi
+
+        echo "Activating OXID module: ${{ inputs.oxid_module_id }}"
+        vendor/bin/oe-console oe:module:activate "${{ inputs.oxid_module_id }}"

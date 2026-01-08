@@ -1,0 +1,21 @@
+name: "Setup PHP and Composer"
+description: "Setup an OXID compatible PHP version as well as Composer"
+
+runs:
+  using: composite
+  steps:
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ inputs.php_version }}
+        tools: composer:v2
+        extensions: mbstring, intl, gd, mysql, zip, curl
+        ini-values: |
+          memory_limit=1G
+          date.timezone=Europe/Berlin
+
+    - name: Show PHP & Composer versions
+      shell: bash
+      run: |
+        php -v
+        composer --version

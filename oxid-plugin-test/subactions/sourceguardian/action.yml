@@ -1,0 +1,30 @@
+name: "Install and enable SourceGuardian Loader"
+description: "Download the lastest version and install it"
+
+runs:
+  using: composite
+  steps:
+    - name: Install SourceGuardian Loader
+      if: inputs.sourceguardian == 'true'
+      shell: bash
+      run: |
+        PHP_VERSION=$(php -r 'echo PHP_MAJOR_VERSION.".".PHP_MINOR_VERSION;')
+        LOADER=ixed.${PHP_VERSION}.lin
+
+        curl -fsSL https://www.sourceguardian.com/loaders/download/loaders.linux-x86_64.tar.gz -o sg.tar.gz
+        mkdir -p loaders ~/.php-ext
+        tar -xzf sg.tar.gz -C ./loaders
+        cp loaders/$LOADER ~/.php-ext/
+
+    - name: Enable SourceGuardian Loader
+      if: inputs.sourceguardian == 'true'
+      shell: bash
+      run: |
+        echo "zend_extension=$HOME/.php-ext/ixed.$(php -r 'echo PHP_MAJOR_VERSION.".".PHP_MINOR_VERSION;').lin" \
+          > $HOME/sourceguardian.ini
+        echo "sourceguardian.enable=1" >> $HOME/sourceguardian.ini
+
+        PHP_INI_DIR=$(php -i | grep '^Scan this dir for additional .ini files =>' | sed 's/.*=> //')
+        sudo cp $HOME/sourceguardian.ini "$PHP_INI_DIR/99-sourceguardian.ini"
+
+        php -v | grep -i sourceguardian
